@@ -62,7 +62,8 @@ export default {
     const sortByCriteria = ref(null);
 
     const loadFollowers = () => {
-      followers.value = twubricData; 
+      const storedFollowers = localStorage.getItem('followers');
+      followers.value = storedFollowers ? JSON.parse(storedFollowers) : twubricData;
     };
 
     const sortBy = (criteria) => {
@@ -72,6 +73,7 @@ export default {
         followers.value.sort((a, b) => a.twubric[criteria] - b.twubric[criteria]);
         sortByCriteria.value = criteria;
       }
+      saveFollowers();
     };
 
     const filterByDate = () => {
@@ -81,10 +83,16 @@ export default {
                (!endDate.value || joinedDate <= new Date(endDate.value));
       });
       followers.value = filtered;
+      saveFollowers();
     };
 
     const removeFollower = (uid) => {
       followers.value = followers.value.filter(follower => follower.uid !== uid);
+      saveFollowers();
+    };
+
+    const saveFollowers = () => {
+      localStorage.setItem('followers', JSON.stringify(followers.value));
     };
 
     const formatDate = (timestamp) => {
